@@ -20,16 +20,16 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"sleepomen.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"找到 ${hits} 個搜索結果（用時 ${time} 毫秒）","hits":"找到 ${hits} 個搜索結果"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="&#x2F;* 極簡質感個人檔案卡 CSS *&#x2F;   .about-container { margin-bottom: 60px; }   .about-card {     background: #fafafa;     border-radius: 8px;     padding: 40px 30px;     margin-bottom: 30px;     box-shadow: 0 4">
+    <meta name="description" content=".about-container { margin-bottom: 60px; }   .about-card {     background: #1e1e1e;     border: 1px solid #2d2d2d;     border-radius: 8px;     padding: 40px 30px;     margin-bottom: 30px;     box-sh">
 <meta property="og:type" content="website">
 <meta property="og:title" content="about">
 <meta property="og:url" content="http://sleepomen.github.io/about/index.html">
 <meta property="og:site_name" content="Vessel">
-<meta property="og:description" content="&#x2F;* 極簡質感個人檔案卡 CSS *&#x2F;   .about-container { margin-bottom: 60px; }   .about-card {     background: #fafafa;     border-radius: 8px;     padding: 40px 30px;     margin-bottom: 30px;     box-shadow: 0 4">
+<meta property="og:description" content=".about-container { margin-bottom: 60px; }   .about-card {     background: #1e1e1e;     border: 1px solid #2d2d2d;     border-radius: 8px;     padding: 40px 30px;     margin-bottom: 30px;     box-sh">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="http://sleepomen.github.io/images/pochi.webp">
 <meta property="article:published_time" content="2026-08-24T12:35:26.000Z">
-<meta property="article:modified_time" content="2026-08-25T13:54:29.098Z">
+<meta property="article:modified_time" content="2026-08-25T14:03:24.986Z">
 <meta property="article:author" content="Vessel">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://sleepomen.github.io/images/pochi.webp">
@@ -184,15 +184,15 @@
       
       <div class="post-body">
           <style>
-  /* 極簡質感個人檔案卡 CSS */
   .about-container { margin-bottom: 60px; }
   .about-card {
-    background: #fafafa;
+    background: #1e1e1e;
+    border: 1px solid #2d2d2d;
     border-radius: 8px;
     padding: 40px 30px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    text-align: center !important;
     position: relative;
   }
   .about-avatar {
@@ -201,46 +201,35 @@
     border-radius: 50%;
     margin-bottom: 20px;
     object-fit: cover;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   }
-  .about-name { font-size: 1.8em; color: #333; font-weight: bold; margin: 0 0 10px; }
+  .about-name { font-size: 1.8em; color: #f0f0f0; font-weight: bold; margin: 0 0 10px; }
   .about-slogan { color: #d98f6f; font-size: 1em; font-family: serif; letter-spacing: 1px; margin-bottom: 20px; }
-  .about-desc { color: #555; line-height: 1.8; font-size: 0.95em; max-width: 600px; margin: 0 auto; }
+  .about-desc { color: #ccc; line-height: 1.8; font-size: 0.95em; max-width: 600px; margin: 0 auto; }
   
-  /* 區塊容器：強制整體內容文字與元素全都置中 */
-  .section-block { 
-    text-align: center !important; 
-    margin-top: 40px; 
-    width: 100%;
-  }
-  
-  /* 標題：強制置中 */
+  .section-block { text-align: center !important; margin-top: 40px; width: 100%; }
   .section-title { 
     text-align: center !important; 
     font-size: 1.1em; 
     letter-spacing: 3px; 
-    color: #888; 
+    color: #a0a0a0; 
     margin-bottom: 20px; 
     font-weight: bold; 
     display: block !important;
     width: 100%;
   }
-  
-  /* 標籤群組：使用 flexbox 並設定橫向置中 */
   .tags-group { 
     display: flex !important; 
     flex-wrap: wrap !important; 
     gap: 12px !important; 
-    justify-content: center !important; /* 這個是讓按鈕水平置中的關鍵 */
+    justify-content: center !important; 
     align-items: center !important;
     width: 100%;
   }
-  
-  /* 單一標籤按鈕 */
   .tag {
-    background: #fff; 
-    color: #555; 
-    border: 1px solid #eaeaea;
+    background: #2a2a2a; 
+    color: #ddd; 
+    border: 1px solid #3d3d3d;
     padding: 6px 18px; 
     border-radius: 20px; 
     font-size: 0.9em;
@@ -252,7 +241,7 @@
     border-color: #d98f6f; 
     color: #d98f6f; 
     transform: translateY(-2px); 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
   }
 </style>
 
