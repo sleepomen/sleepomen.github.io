@@ -1,0 +1,102 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import { formatDate } from '../../utils';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const byYear = new Map<string, typeof posts>();
+for (const p of posts) {
+  const y = formatDate(p.data.date).slice(0, 4);
+  byYear.set(y, [...(byYear.get(y) ?? []), p]);
+}
+---
+
+<Base title="文章" description="所有文章">
+  <header class="page-head">
+    <div class="label">// 03 — Blog</div>
+    <h1>文章</h1>
+    <p>共 {posts.length} 篇。</p>
+  </header>
+
+  {
+    [...byYear].map(([year, list]) => (
+      <section class="section">
+        <SectionHead idx={year} title={`${list.length} 篇`} />
+        <ul class="list">
+          {list.map((p) => (
+            <li>
+              <a href={`/blog/${p.id}/`}>
+                <span class="mono date">{formatDate(p.data.date).slice(5)}</span>
+                <span class="body">
+                  <span class="title">{p.data.title}</span>
+                  {p.data.description && <span class="desc">{p.data.description}</span>}
+                </span>
+                <span class="tags mono">{p.data.tags.map((t) => `#${t}`).join(' ')}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .list a {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding: 18px 4px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.15s, padding 0.15s;
+  }
+
+  .list a:hover {
+    background: var(--surface);
+    padding-left: 12px;
+  }
+
+  .list a:hover .title {
+    color: var(--accent);
+  }
+
+  .date,
+  .tags {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+
+  .desc {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px) {
+    .list a {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>

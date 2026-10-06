@@ -1,0 +1,133 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Giscus from '../components/Giscus.astro';
+import { friends } from '../data/links';
+
+const template = `YOUR_NAME:   # 名字
+URL:         # 網址
+DESC:        # 簡述
+YOUR_IMAGE:  # 頭像網址`;
+---
+
+<Base title="友站" description="朋友們的網站">
+  <header class="page-head">
+    <div class="label">// 04 — Friends</div>
+    <h1>友站</h1>
+    <p>電神朋友們的網站。</p>
+  </header>
+
+  <section class="section">
+    <SectionHead idx="A" title="友鏈" en="Links" />
+    <div class="grid">
+      {
+        friends.map((f) => (
+          <a class="card friend" href={f.url} target="_blank" rel="noopener">
+            <img src={f.avatar} alt="" width="52" height="52" loading="lazy" />
+            <span class="info">
+              <span class="name">{f.name}</span>
+              <span class="desc">{f.desc}</span>
+            </span>
+            <span class="arrow mono">↗</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <SectionHead idx="B" title="交換友鏈" en="Apply" />
+    <p class="apply">歡迎在下方留言交換友鏈，複製以下格式填寫即可，也可以直接私訊我的 Discord。</p>
+    <div class="code card">
+      <div class="code-bar mono"><span>friend.yml</span></div>
+      <pre class="mono">{template}</pre>
+    </div>
+  </section>
+
+  <Giscus />
+</Base>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .friend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+
+  .friend:hover {
+    border-color: var(--accent);
+  }
+
+  .friend img {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.5;
+  }
+
+  .name {
+    font-weight: 600;
+  }
+
+  .desc {
+    font-size: 13px;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .arrow {
+    margin-left: auto;
+    align-self: flex-start;
+    color: var(--muted);
+  }
+
+  .friend:hover .arrow {
+    color: var(--accent);
+  }
+
+  .apply {
+    color: var(--text-2);
+    margin-bottom: 18px;
+  }
+
+  .code {
+    max-width: 520px;
+    overflow: hidden;
+  }
+
+  .code-bar {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+
+  .code pre {
+    margin: 0;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+</style>

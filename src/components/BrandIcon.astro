@@ -1,0 +1,33 @@
+---
+import type { SimpleIcon } from 'simple-icons';
+
+interface Props {
+  icon: SimpleIcon;
+  size?: number;
+}
+
+const { icon, size = 15 } = Astro.props;
+
+// 品牌色太暗（如 GitHub、Threads 的黑色）在深色模式會看不到，改用文字色
+const [r, g, b] = [0, 2, 4].map((i) => parseInt(icon.hex.slice(i, i + 2), 16) / 255);
+const tooDark = 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.12;
+const color = tooDark ? 'currentColor' : `#${icon.hex}`;
+---
+
+<svg
+  class="brand-icon"
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill={color}
+  aria-hidden="true"
+>
+  <path d={icon.path}></path>
+</svg>
+
+<style>
+  .brand-icon {
+    flex-shrink: 0;
+    display: inline-block;
+  }
+</style>

@@ -1,0 +1,461 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import BrandIcon from '../components/BrandIcon.astro';
+import { site, skills, contacts } from '../data/site';
+import { experience } from '../data/experience';
+import { formatDate } from '../utils';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const latest = posts.slice(0, 3);
+const expTotal = experience.reduce((n, g) => n + g.items.length, 0);
+
+const stats = [
+  { k: 'Fields', v: String(experience.length).padStart(2, '0'), note: experience.map((g) => g.label).join(' / ') },
+  { k: 'Records', v: String(expTotal).padStart(2, '0'), note: '競賽與活動' },
+  { k: 'Stack', v: String(skills.length).padStart(2, '0'), note: '常用技術' },
+  { k: 'Posts', v: String(posts.length).padStart(2, '0'), note: '文章' },
+];
+---
+
+<Base>
+  <!-- hero -->
+  <section class="hero">
+    <div class="hero-text">
+      <div class="label">// hello, world</div>
+      <h1>嗨，我是 <span class="accent">{site.name}</span></h1>
+      <p class="slogan mono">「{site.slogan}」</p>
+      <p class="lead">{site.description}，喜歡做開發，遊走於資訊、電機與人文社會之間。這裡會放心得和一些酷東西。</p>
+      <div class="actions">
+        <a class="btn primary" href="/about/">關於我 →</a>
+        <a class="btn" href="/experience/">看經歷</a>
+        <a class="btn" href="/blog/">讀文章</a>
+      </div>
+    </div>
+
+    <figure class="hero-fig">
+      <div class="fig-frame">
+        <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+        <img src={site.avatar} alt={site.name} width="240" height="240" />
+      </div>
+      <figcaption class="mono">FIG.01 — {site.name.toUpperCase()}</figcaption>
+    </figure>
+  </section>
+
+  <!-- stats -->
+  <div class="stats">
+    {
+      stats.map((s) => (
+        <div class="stat">
+          <span class="label">{s.k}</span>
+          <span class="stat-v mono">{s.v}</span>
+          <span class="stat-note">{s.note}</span>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- 01 about -->
+  <section class="section">
+    <SectionHead idx="01" title="關於" en="About" more={{ href: '/about/', label: 'more' }} />
+    <div class="about-grid">
+      <p class="about-text">{site.intro}</p>
+      <div>
+        <div class="label sub">Stack</div>
+        <div class="chips">{skills.map((s) => <span class="chip">{s.icons.map((i) => <BrandIcon icon={i} />)}{s.label}</span>)}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 experience -->
+  <section class="section">
+    <SectionHead idx="02" title="經歷" en="Experience" more={{ href: '/experience/', label: 'all' }} />
+    <div class="exp-grid">
+      {
+        experience.map((g, i) => (
+          <a class="card exp-col" href={`/experience/#${g.id}`}>
+            <div class="exp-col-head">
+              <span class="mono idx">{`0${i + 1}`}</span>
+              <span class="exp-col-title">{g.label}</span>
+              <span class="label">{g.en}</span>
+              <span class="mono count">{g.items.length}</span>
+            </div>
+            <ul>
+              {g.items.slice(0, 3).map((it) => (
+                <li>
+                  <span class="mono yr">{it.year}</span>
+                  <span class="t">{it.title}</span>
+                  <span class="r">{it.result}</span>
+                </li>
+              ))}
+            </ul>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 03 blog -->
+  <section class="section">
+    <SectionHead idx="03" title="文章" en="Blog" more={{ href: '/blog/', label: 'archive' }} />
+    <ul class="post-list">
+      {
+        latest.map((p) => (
+          <li>
+            <a href={`/blog/${p.id}/`}>
+              <span class="mono date">{formatDate(p.data.date)}</span>
+              <span class="title">{p.data.title}</span>
+              <span class="tags mono">{p.data.tags.map((t) => `#${t}`).join(' ')}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- 04 contact -->
+  <section class="section">
+    <SectionHead idx="04" title="聯絡" en="Contact" />
+    <div class="contact">
+      <p>想交流、合作或交換友鏈，歡迎從下面任一管道找我。</p>
+      <div class="contact-grid">
+        {
+          contacts.map((c) => (
+            <a class="card contact-item mono" href={c.href} target="_blank" rel="noopener">
+              <span class="contact-name">
+                <BrandIcon icon={c.icon} size={17} />
+                {c.label}
+              </span>
+              <span class="arrow">↗</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .accent {
+    color: var(--accent);
+  }
+
+  /* hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: clamp(32px, 6vw, 72px);
+    padding: clamp(56px, 10vw, 120px) var(--gutter);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 6.5vw, 3.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 14px 0 12px;
+  }
+
+  .slogan {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .lead {
+    color: var(--text-2);
+    max-width: 520px;
+    font-size: 1.05rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .hero-fig {
+    margin: 0;
+  }
+
+  .fig-frame {
+    position: relative;
+    padding: 14px;
+    border: 1px dashed var(--line-strong);
+    background: var(--bg);
+  }
+
+  .fig-frame img {
+    width: clamp(160px, 22vw, 240px);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 2px;
+    filter: grayscale(0.15);
+  }
+
+  .tick {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--accent);
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .tl { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
+  .tr { top: -1px; right: -1px; border-top-width: 2px; border-right-width: 2px; }
+  .bl { bottom: -1px; left: -1px; border-bottom-width: 2px; border-left-width: 2px; }
+  .br { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
+
+  figcaption {
+    margin-top: 10px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 20px var(--gutter);
+  }
+
+  .stat + .stat {
+    border-left: 1px solid var(--line);
+  }
+
+  .stat-v {
+    font-size: 1.9rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .stat-note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* about */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(24px, 5vw, 56px);
+  }
+
+  .about-text {
+    color: var(--text-2);
+  }
+
+  .label.sub {
+    margin-bottom: 12px;
+  }
+
+  /* experience */
+  .exp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .exp-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .exp-col:hover {
+    border-color: var(--accent);
+  }
+
+  .exp-col-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .exp-col-head .idx {
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  .exp-col-title {
+    font-weight: 600;
+  }
+
+  .exp-col-head .count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .exp-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .exp-col li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .exp-col li + li {
+    border-top: 1px dashed var(--line);
+  }
+
+  .yr {
+    font-size: 11.5px;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+
+  .exp-col .r {
+    grid-column: 2;
+    font-size: 12.5px;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+
+  /* posts */
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .post-list a {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding: 16px 4px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.15s, padding 0.15s;
+  }
+
+  .post-list a:hover {
+    background: var(--surface);
+    padding-left: 12px;
+  }
+
+  .post-list a:hover .title {
+    color: var(--accent);
+  }
+
+  .date,
+  .tags {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .title {
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+
+  /* contact */
+  .contact p {
+    color: var(--text-2);
+    margin-bottom: 20px;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    font-size: 13.5px;
+  }
+
+  .contact-item:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .contact-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .arrow {
+    color: var(--muted);
+  }
+
+  @media (max-width: 900px) {
+    .exp-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-fig {
+      order: -1;
+      justify-self: start;
+    }
+
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat:nth-child(3) {
+      border-left: 0;
+    }
+
+    .stat:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+
+    .post-list a {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+
+    .tags {
+      display: none;
+    }
+  }
+</style>

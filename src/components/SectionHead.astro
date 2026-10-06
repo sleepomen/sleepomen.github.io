@@ -1,0 +1,18 @@
+---
+interface Props {
+  idx: string;
+  title: string;
+  en?: string;
+  more?: { href: string; label: string };
+}
+
+const { idx, title, en, more } = Astro.props;
+---
+
+<div class="sec-head">
+  <span class="idx">{idx} /</span>
+  <h2>{title}</h2>
+  {en && <span class="en">{en}</span>}
+  <span class="rule"></span>
+  {more && <a class="more" href={more.href}>{more.label} →</a>}
+</div>

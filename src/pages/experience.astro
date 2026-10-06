@@ -1,0 +1,180 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { experience } from '../data/experience';
+
+const total = experience.reduce((n, g) => n + g.items.length, 0);
+---
+
+<Base title="經歷" description="競賽、計畫與活動經歷">
+  <header class="page-head">
+    <div class="label">// 02 — Experience</div>
+    <h1>經歷</h1>
+    <p>資訊、人文、電機三個領域，共 {total} 筆紀錄。</p>
+    <nav class="jump mono" aria-label="分類">
+      {
+        experience.map((g, i) => (
+          <a href={`#${g.id}`}>
+            <span class="n">0{i + 1}</span> {g.label} <span class="c">{g.items.length}</span>
+          </a>
+        ))
+      }
+    </nav>
+  </header>
+
+  {
+    experience.map((g, i) => (
+      <section class="section" id={g.id}>
+        <SectionHead idx={`0${i + 1}`} title={g.label} en={g.en} />
+        <ol class="table">
+          <li class="thead mono">
+            <span>YEAR</span>
+            <span>EVENT</span>
+            <span>RESULT</span>
+          </li>
+          {g.items.map((it) => (
+            <li class="row">
+              <span class="mono yr">{it.year}</span>
+              <span class="ev">
+                <span class="t">{it.title}</span>
+                {it.sub && <span class="sub">{it.sub}</span>}
+              </span>
+              <span class="res">{it.result}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .jump a {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .jump a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .jump .n {
+    color: var(--accent);
+  }
+
+  .jump .c {
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  .section {
+    scroll-margin-top: 60px;
+  }
+
+  .table {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .thead,
+  .row {
+    display: grid;
+    grid-template-columns: 110px 1fr minmax(120px, 0.45fr);
+    gap: 16px;
+    padding: 14px 18px;
+  }
+
+  .thead {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .row + .row {
+    border-top: 1px solid var(--line);
+  }
+
+  .row {
+    position: relative;
+    transition: background 0.15s;
+  }
+
+  .row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+  }
+
+  .row:hover {
+    background: var(--surface-2);
+  }
+
+  .row:hover::before {
+    transform: scaleY(1);
+  }
+
+  .yr {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .ev {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+  }
+
+  .t {
+    font-weight: 500;
+  }
+
+  .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .res {
+    font-size: 14px;
+    color: var(--accent);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 640px) {
+    .thead {
+      display: none;
+    }
+
+    .row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

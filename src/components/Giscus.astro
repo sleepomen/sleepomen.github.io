@@ -1,0 +1,45 @@
+---
+// 留言板：沿用原本的 giscus 設定，以網址路徑對應討論串
+---
+
+<section class="section comments">
+  <div class="label">// Comments</div>
+  <div class="giscus-slot"></div>
+</section>
+
+<script>
+  const theme = () => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark_dimmed');
+
+  const slot = document.querySelector('.giscus-slot');
+  if (slot) {
+    const s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    Object.entries({
+      repo: 'sleepomen/sleepomen.github.io',
+      repoId: 'R_kgDOT_ls3Q',
+      category: 'Announcements',
+      categoryId: 'DIC_kwDOT_ls3c4DEJ_P',
+      mapping: 'pathname',
+      strict: '0',
+      reactionsEnabled: '1',
+      emitMetadata: '0',
+      inputPosition: 'bottom',
+      theme: theme(),
+      lang: 'zh-TW',
+    }).forEach(([k, v]) => (s.dataset[k] = v));
+    slot.appendChild(s);
+  }
+
+  document.addEventListener('themechange', () => {
+    const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+    frame?.contentWindow?.postMessage({ giscus: { setConfig: { theme: theme() } } }, 'https://giscus.app');
+  });
+</script>
+
+<style>
+  .label {
+    margin-bottom: 20px;
+  }
+</style>
