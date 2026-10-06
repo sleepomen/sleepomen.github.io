@@ -1,15 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/SectionHead.astro';
 import BrandIcon from '../components/BrandIcon.astro';
 import { site, skills, contacts } from '../data/site';
 import { experience } from '../data/experience';
 import { formatDate } from '../utils';
+import { getPosts } from '../posts';
+import { getCategory } from '../data/categories';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
+const posts = await getPosts();
 const latest = posts.slice(0, 3);
 const expTotal = experience.reduce((n, g) => n + g.items.length, 0);
 
@@ -108,7 +107,7 @@ const stats = [
             <a href={`/blog/${p.id}/`}>
               <span class="mono date">{formatDate(p.data.date)}</span>
               <span class="title">{p.data.title}</span>
-              <span class="tags mono">{p.data.tags.map((t) => `#${t}`).join(' ')}</span>
+              <span class="tags mono">{getCategory(p.data.category).label}</span>
             </a>
           </li>
         ))

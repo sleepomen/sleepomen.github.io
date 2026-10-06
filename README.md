@@ -15,6 +15,7 @@ npm run build    # 輸出到 dist/
 | 要改什麼 | 檔案 |
 |---|---|
 | 文章 | `src/content/blog/*.md` |
+| 文章分類 | `src/data/categories.ts` |
 | 名字、簡介、技能、聯絡方式、選單 | `src/data/site.ts` |
 | 經歷 | `src/data/experience.ts` |
 | 友站 | `src/data/links.ts` |
@@ -26,6 +27,7 @@ npm run build    # 輸出到 dist/
 ---
 title: 文章標題
 date: 2026-10-06
+category: tech        # 填 src/data/categories.ts 裡的 id
 description: 一句話簡介
 tags: [tag1, tag2]
 draft: false

@@ -1,13 +1,13 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Giscus from '../../components/Giscus.astro';
 import { formatDate } from '../../utils';
+import { getPosts } from '../../posts';
+import { getCategory } from '../../data/categories';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-    (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-  );
+  const posts = await getPosts();
   return posts.map((post, i) => ({
     params: { slug: post.id },
     props: { post, newer: posts[i - 1], older: posts[i + 1] },
@@ -17,6 +17,7 @@ export async function getStaticPaths() {
 const { post, newer, older } = Astro.props;
 const { Content, headings } = await render(post);
 const toc = headings.filter((h) => h.depth <= 3);
+const cat = getCategory(post.data.category);
 ---
 
 <Base title={post.data.title} description={post.data.description}>
@@ -25,6 +26,7 @@ const toc = headings.filter((h) => h.depth <= 3);
     <h1>{post.data.title}</h1>
     <div class="meta mono">
       <span>{formatDate(post.data.date)}</span>
+      <a class="chip cat" href={`/blog/category/${cat.id}/`}>{cat.label}</a>
       {post.data.tags.map((t) => <span class="chip">#{t}</span>)}
     </div>
   </header>
@@ -75,6 +77,11 @@ const toc = headings.filter((h) => h.depth <= 3);
 </Base>
 
 <style>
+  .cat:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   .back:hover {
     color: var(--accent);
   }

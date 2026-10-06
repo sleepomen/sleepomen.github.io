@@ -1,0 +1,16 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BlogArchive from '../../../components/BlogArchive.astro';
+import { categories, type CategoryId } from '../../../data/categories';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { category: c.id }, props: { label: c.label } }));
+}
+
+const { category } = Astro.params as { category: CategoryId };
+const { label } = Astro.props;
+---
+
+<Base title={`${label} | 文章`} description={`${label}分類的文章`}>
+  <BlogArchive active={category} />
+</Base>

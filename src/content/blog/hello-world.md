@@ -1,6 +1,7 @@
 ---
 title: Hello World
 date: 2026-08-21
+category: notes
 description: 網站的第一篇文章。
 tags: [notes]
 ---
@@ -15,6 +16,7 @@ Welcome to my blog! 這是網站的第一篇文章。
 ---
 title: 文章標題
 date: 2026-10-06
+category: tech   # tech 技術 / notes 心得 / life 生活
 description: 一句話簡介
 tags: [tag1, tag2]
 ---

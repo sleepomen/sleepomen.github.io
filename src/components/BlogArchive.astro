@@ -1,0 +1,173 @@
+---
+import SectionHead from './SectionHead.astro';
+import { categories, getCategory, type CategoryId } from '../data/categories';
+import { getPosts } from '../posts';
+import { formatDate } from '../utils';
+
+interface Props {
+  active?: CategoryId;
+}
+
+const { active } = Astro.props;
+const all = await getPosts();
+const posts = active ? all.filter((p) => p.data.category === active) : all;
+const count = (id: CategoryId) => all.filter((p) => p.data.category === id).length;
+
+const byYear = new Map<string, typeof posts>();
+for (const p of posts) {
+  const y = formatDate(p.data.date).slice(0, 4);
+  byYear.set(y, [...(byYear.get(y) ?? []), p]);
+}
+
+const cat = active && getCategory(active);
+---
+
+<header class="page-head">
+  <div class="label">// 03 — Blog{cat && ` / ${cat.en}`}</div>
+  <h1>{cat ? cat.label : '文章'}</h1>
+  <p>共 {posts.length} 篇。</p>
+  <nav class="cats mono" aria-label="文章分類">
+    <a href="/blog/" class:list={{ on: !active }}>全部 <span class="c">{all.length}</span></a>
+    {
+      categories.map((c) => (
+        <a href={`/blog/category/${c.id}/`} class:list={{ on: active === c.id }}>
+          {c.label} <span class="c">{count(c.id)}</span>
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+{
+  posts.length === 0 && (
+    <section class="section">
+      <p class="muted mono">// 這個分類還沒有文章</p>
+    </section>
+  )
+}
+
+{
+  [...byYear].map(([year, list]) => (
+    <section class="section">
+      <SectionHead idx={year} title={`${list.length} 篇`} />
+      <ul class="list">
+        {list.map((p) => (
+          <li>
+            <a href={`/blog/${p.id}/`}>
+              <span class="mono date">{formatDate(p.data.date).slice(5)}</span>
+              <span class="body">
+                <span class="title">{p.data.title}</span>
+                {p.data.description && <span class="desc">{p.data.description}</span>}
+              </span>
+              <span class="meta mono">
+                {!active && <span class="cat">{getCategory(p.data.category).label}</span>}
+                {p.data.tags.map((t) => `#${t}`).join(' ')}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))
+}
+
+<style>
+  .cats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .cats a {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .cats a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .cats a.on {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .cats .c {
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .list a {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding: 18px 4px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.15s, padding 0.15s;
+  }
+
+  .list a:hover {
+    background: var(--surface);
+    padding-left: 12px;
+  }
+
+  .list a:hover .title {
+    color: var(--accent);
+  }
+
+  .date,
+  .meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .meta {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+
+  .cat {
+    padding: 1px 8px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    color: var(--text-2);
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+
+  .desc {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px) {
+    .list a {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>
