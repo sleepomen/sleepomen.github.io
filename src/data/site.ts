@@ -33,6 +33,7 @@ export const nav = [
   { href: '/about/', label: '關於', en: 'About' },
   { href: '/experience/', label: '經歷', en: 'Experience' },
   { href: '/blog/', label: '文章', en: 'Blog' },
+  { href: '/recommend/', label: '推薦', en: 'Picks' },
   { href: '/links/', label: '友站', en: 'Friends' },
 ];
 

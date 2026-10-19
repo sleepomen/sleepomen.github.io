@@ -18,6 +18,7 @@ npm run build    # 輸出到 dist/
 | 文章分類 | `src/data/categories.ts` |
 | 名字、簡介、技能、聯絡方式、選單 | `src/data/site.ts` |
 | 經歷 | `src/data/experience.ts` |
+| 推薦（音樂、動漫、書籍） | `src/data/recommend.ts` |
 | 友站 | `src/data/links.ts` |
 | 顏色、字體 | `src/styles/global.css` 最上面的 `:root` |
 

@@ -1,0 +1,348 @@
+---
+// 推薦的每一層都是一頁：
+// /recommend/ → 音樂、動漫、書籍
+// /recommend/music/ → Metal、R&B
+// /recommend/music/metal/ → BAND、ALBUM
+// /recommend/music/metal/band/ → 推薦名單
+import Base from '../../layouts/Base.astro';
+import PlayerCard from '../../components/PlayerCard.astro';
+import PickCard from '../../components/PickCard.astro';
+import {
+  recommend,
+  recommendNodes,
+  recommendHref,
+  countItems,
+  previewCovers,
+  type RecommendNode,
+  type RecommendItem,
+} from '../../data/recommend';
+
+export function getStaticPaths() {
+  return [
+    { params: { path: undefined }, props: { node: undefined } },
+    ...recommendNodes().map((node) => ({ params: { path: node.path.join('/') }, props: { node } })),
+  ];
+}
+
+const { node } = Astro.props as { node?: RecommendNode };
+const trail = node?.trail ?? [];
+const group = trail.at(-1);
+const root = trail[0];
+const path = node?.path ?? [];
+
+// 這一層要列出的：子分類（還能再點進去）或推薦名單（最底層）
+const children = group ? (group.children ?? []) : recommend;
+const items = group?.items ?? [];
+const player = root?.style === 'player';
+const parentHref = recommendHref(path.slice(0, -1));
+
+const title = group ? group.label : '推薦';
+
+// 最上面的 hashtag：這一頁裡的類型（creator「 · 」前面那段，例如 Metalcore），點了只顯示那一類
+const genreOf = (it: RecommendItem) => it.genre ?? (it.creator?.includes(' · ') ? it.creator.split(' · ')[0] : undefined);
+const genreCount = new Map<string, number>();
+for (const it of items) {
+  const g = genreOf(it);
+  if (g) genreCount.set(g, (genreCount.get(g) ?? 0) + 1);
+}
+// 數量多的排前面
+const genres = [...genreCount].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+---
+
+<Base title={trail.length ? `${trail.map((g) => g.label).join(' / ')} | 推薦` : '推薦'} description="喜歡的音樂、動漫與書籍">
+  <header class="page-head">
+    <nav class="crumbs mono" aria-label="位置">
+      <a href="/recommend/">推薦</a>
+      {
+        trail.map((g, i) => (
+          <>
+            <span class="sep">/</span>
+            {i === trail.length - 1 ? <span class="here">{g.label}</span> : <a href={recommendHref(path.slice(0, i + 1))}>{g.label}</a>}
+          </>
+        ))
+      }
+    </nav>
+    <h1>{title}</h1>
+    {!group && <p>最近喜歡的音樂、動漫和書，點進去看看。</p>}
+    {
+      genres.length > 1 && (
+        <div class="tags mono" role="group" aria-label="依類型篩選">
+          <button type="button" class="tag active" data-genre="" aria-pressed="true">
+            #全部 <span class="n">{items.length}</span>
+          </button>
+          {genres.map(([g, n]) => (
+            <button type="button" class="tag" data-genre={g} aria-pressed="false">
+              #{g} <span class="n">{n}</span>
+            </button>
+          ))}
+        </div>
+      )
+    }
+  </header>
+
+  <section class="section">
+    {
+      children.length > 0 && (
+        <div class="tiles">
+          {children.map((c, i) => {
+            const covers = previewCovers(c);
+            return (
+              <a class="card tile" href={recommendHref([...path, c.id])}>
+                <span class="tile-top">
+                  <span class="mono idx">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="mono count">{countItems(c)} 筆</span>
+                </span>
+                <span class="tile-name">{c.label}</span>
+                <span class="label">{c.en}</span>
+                {c.children && <span class="subs mono">{c.children.map((s) => s.label).join(' · ')}</span>}
+                <span class="tile-foot">
+                  <span class="covers">
+                    {covers.map((src) => (
+                      <img src={src} alt="" loading="lazy" />
+                    ))}
+                  </span>
+                  <span class="arrow mono">→</span>
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      )
+    }
+
+    {
+      items.length > 0 && (
+        <div class:list={['grid', { player }]}>
+          {items.map((it) => (
+            <div class="cell" data-genre={genreOf(it) ?? ''}>
+              {player ? <PlayerCard item={it} /> : <PickCard item={it} kind={root!.id} en={root!.en} />}
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    {group && children.length === 0 && items.length === 0 && <p class="empty mono">// 還沒放東西，敬請期待</p>}
+
+    {
+      group && (
+        <a class="back mono" href={parentHref}>
+          ← 回{trail.length > 1 ? ` ${trail.at(-2)!.label}` : '推薦'}
+        </a>
+      )
+    }
+  </section>
+</Base>
+
+<script>
+  // 點 hashtag 篩選；網址會帶 #類型，分享出去也會停在那一類
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.tag[data-genre]')];
+  const cells = [...document.querySelectorAll<HTMLElement>('.cell')];
+
+  const apply = (genre: string) => {
+    if (genre && !buttons.some((b) => b.dataset.genre === genre)) genre = '';
+    for (const b of buttons) {
+      const on = b.dataset.genre === genre;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', String(on));
+    }
+    for (const c of cells) c.hidden = !!genre && c.dataset.genre !== genre;
+  };
+
+  for (const b of buttons) {
+    b.addEventListener('click', () => {
+      const genre = b.dataset.genre ?? '';
+      history.replaceState(null, '', genre ? `#${encodeURIComponent(genre)}` : location.pathname);
+      apply(genre);
+    });
+  }
+
+  if (buttons.length) apply(decodeURIComponent(location.hash.slice(1)));
+</script>
+
+<style>
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+
+  .crumbs a:hover {
+    color: var(--accent);
+  }
+
+  .crumbs .sep {
+    color: var(--line-strong);
+  }
+
+  .crumbs .here {
+    color: var(--accent);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .tag {
+    padding: 4px 10px;
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--text-2);
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .tag .n {
+    margin-left: 2px;
+    color: var(--muted);
+  }
+
+  .tag:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .tag.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* 分類入口 */
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 18px 20px;
+    transition: border-color 0.15s, transform 0.2s;
+  }
+
+  .tile:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .tile-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+
+  .idx {
+    color: var(--accent);
+  }
+
+  .count {
+    color: var(--muted);
+  }
+
+  .tile-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .subs {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  .tile-foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 22px;
+    min-height: 40px;
+  }
+
+  .covers {
+    display: flex;
+  }
+
+  .covers img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid var(--surface);
+    background: var(--surface-2);
+  }
+
+  .covers img + img {
+    margin-left: -12px;
+  }
+
+  .arrow {
+    color: var(--muted);
+    transition: color 0.15s, transform 0.15s;
+  }
+
+  .tile:hover .arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  /* 推薦名單 */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+  }
+
+  .grid.player {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 20px;
+  }
+
+  .cell {
+    display: grid;
+  }
+
+  .cell[hidden] {
+    display: none;
+  }
+
+  .empty {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .back {
+    display: inline-block;
+    margin-top: 36px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .back:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 520px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .grid.player {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+</style>

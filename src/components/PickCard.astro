@@ -1,0 +1,114 @@
+---
+// 一般推薦卡片（動漫、書籍）：左邊封面，右邊文字
+import type { RecommendItem } from '../data/recommend';
+
+interface Props {
+  item: RecommendItem;
+  kind: string; // 分類 id，用來決定封面比例
+  en: string;
+}
+
+const { item, kind, en } = Astro.props;
+const Tag = item.url ? 'a' : 'div';
+---
+
+<Tag
+  class:list={['card', 'pick', { link: item.url }]}
+  {...(item.url && { href: item.url, target: '_blank', rel: 'noopener' })}
+>
+  <span class:list={['cover', kind]}>
+    {item.cover ? <img src={item.cover} alt="" loading="lazy" /> : <span class="cover-ph mono">{en.toUpperCase()}</span>}
+  </span>
+  <span class="info">
+    <span class="title">{item.title}</span>
+    {(item.creator || item.year) && <span class="meta mono">{[item.creator, item.year].filter(Boolean).join(' · ')}</span>}
+    {item.note && <span class="note">{item.note}</span>}
+  </span>
+  {item.url && <span class="arrow mono">↗</span>}
+</Tag>
+
+<style>
+  .pick {
+    position: relative;
+    display: flex;
+    gap: 16px;
+    padding: 14px;
+  }
+
+  .pick.link:hover {
+    border-color: var(--accent);
+  }
+
+  .cover {
+    flex-shrink: 0;
+    width: 88px;
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+
+  /* 動漫、書籍用直式封面 */
+  .cover.anime,
+  .cover.books {
+    aspect-ratio: 2 / 3;
+  }
+
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover-ph {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--line-strong);
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.5;
+  }
+
+  .title {
+    font-weight: 600;
+    padding-right: 18px;
+  }
+
+  .meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .note {
+    font-size: 14px;
+    color: var(--text-2);
+    margin-top: 8px;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    color: var(--muted);
+  }
+
+  .pick.link:hover .arrow,
+  .pick.link:hover .title {
+    color: var(--accent);
+  }
+
+  @media (max-width: 520px) {
+    .cover {
+      width: 72px;
+    }
+  }
+</style>

@@ -1,0 +1,192 @@
+---
+// 淺色「播放中」卡片：上面封面，下面 名稱 / 歌手，全部包在淺色底裡
+import { siSpotify } from 'simple-icons';
+import BrandIcon from './BrandIcon.astro';
+import type { RecommendItem } from '../data/recommend';
+
+interface Props {
+  item: RecommendItem;
+}
+
+const { item } = Astro.props;
+// 有 Spotify 按鈕時整張卡不能再是連結（連結裡不能包連結）
+const Tag = item.url && !item.spotify ? 'a' : 'div';
+---
+
+<Tag
+  class:list={['player', { link: Tag === 'a' }]}
+  {...(Tag === 'a' && { href: item.url, target: '_blank', rel: 'noopener' })}
+>
+  <span class="np mono">NOW PLAYING</span>
+  <span class="cover">
+    {item.cover ? <img src={item.cover} alt="" loading="lazy" /> : <span class="cover-ph mono">♪</span>}
+  </span>
+  <span class="title">{item.title}</span>
+  {
+    (item.creator || item.year) && (
+      <span class="creator">{[item.creator, item.year].filter(Boolean).join(' · ')}</span>
+    )
+  }
+  <span class="bar" aria-hidden="true"><span class="fill"></span></span>
+  <span class="controls" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 5v14M19 5 9 12l10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+    <span class="play"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M7 4.5v15L19.5 12Z" fill="currentColor"></path></svg></span>
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M18 5v14M5 5l10 7-10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+  </span>
+  {item.note && <span class="note">{item.note}</span>}
+  {
+    item.spotify && (
+      <a class="spotify" href={item.spotify} target="_blank" rel="noopener">
+        <BrandIcon icon={siSpotify} size={15} />
+        Check On Spotify
+      </a>
+    )
+  }
+</Tag>
+
+<style>
+  /* 跟著深淺主題變：深色模式是比頁面亮一階的灰底，淺色模式是白底 */
+  .player {
+    --p-bg: #1f1f23;
+    --p-text: var(--text);
+    --p-muted: var(--muted);
+    --p-track: #3a3a41;
+
+    display: flex;
+    flex-direction: column;
+    padding: 14px 14px 16px;
+    background: var(--p-bg);
+    color: var(--p-text);
+    border: 1px solid transparent;
+    border-radius: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  :global(:root[data-theme='light']) .player {
+    --p-bg: #ffffff;
+    --p-track: #e4e0d8;
+    border-color: var(--line);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  }
+
+  .player.link:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+
+  .np {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--p-muted);
+    margin-bottom: 10px;
+  }
+
+  .cover {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--p-track);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover-ph {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-size: 40px;
+    color: var(--p-muted);
+  }
+
+  .title {
+    margin-top: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .creator {
+    font-size: 13.5px;
+    color: var(--p-muted);
+    line-height: 1.5;
+  }
+
+  .bar {
+    position: relative;
+    height: 3px;
+    margin-top: 14px;
+    border-radius: 0;
+    background: var(--p-track);
+  }
+
+  .fill {
+    position: absolute;
+    inset: 0 62% 0 0;
+    border-radius: inherit;
+    background: var(--accent);
+  }
+
+  .fill::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -3px;
+    width: 9px;
+    height: 9px;
+    border-radius: 0;
+    background: var(--accent);
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 12px;
+    color: var(--p-text);
+  }
+
+  .play {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 0;
+    background: var(--p-text);
+    color: var(--p-bg);
+  }
+
+  .spotify {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--p-track);
+    border-radius: 0;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .spotify:hover {
+    border-color: #1ed760;
+    color: #1ed760;
+  }
+
+  .note {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--p-track);
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+</style>
