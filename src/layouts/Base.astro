@@ -45,6 +45,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         document.documentElement.dataset.theme = theme;
       })();
     </script>
+    {
+      site.goatcounter && (
+        <script
+          is:inline
+          async
+          data-goatcounter={`https://${site.goatcounter}.goatcounter.com/count`}
+          src="https://gc.zgo.at/count.js"
+        />
+      )
+    }
   </head>
   <body>
     <div class="frame">

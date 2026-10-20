@@ -24,6 +24,10 @@ export const site = {
   quoteBy: 'Socrates',
   slogan: '嘗試不同的人生',
   avatar: '/images/pochi.webp',
+  // 網站開站時間（第一個 commit），首頁的「運行時間」從這裡開始算
+  launched: '2026-08-21T19:55:10+08:00',
+  // GoatCounter 帳號名稱：https://<這裡>.goatcounter.com，空白就不計數
+  goatcounter: 'sleepomen',
   intro:
     '電神們早安，我來自淡江高中人文社會班，目前為116特選牲，喜歡做開發，於資訊、電機、人文社會領域都有相關經驗，這裡可以看我發心得或是分享一些酷東西，可以叫我 Vessel，各位多多指教。',
 };

@@ -12,11 +12,16 @@ const posts = await getPosts();
 const latest = posts.slice(0, 3);
 const expTotal = experience.reduce((n, g) => n + g.items.length, 0);
 
-const stats = [
+// 建置當下的天數，打開頁面後會由下面的 script 即時更新
+const uptimeDays = Math.floor((Date.now() - new Date(site.launched).getTime()) / 86400000);
+
+const stats: { k: string; v: string; note: string; live?: 'uptime' | 'visitors' }[] = [
   { k: 'Fields', v: String(experience.length).padStart(2, '0'), note: experience.map((g) => g.label).join(' / ') },
   { k: 'Records', v: String(expTotal).padStart(2, '0'), note: '競賽與活動' },
   { k: 'Stack', v: String(skills.length).padStart(2, '0'), note: '常用技術' },
   { k: 'Posts', v: String(posts.length).padStart(2, '0'), note: '文章' },
+  { k: 'Uptime', v: `${uptimeDays}d`, note: '網站已運行', live: 'uptime' },
+  { k: 'Visitors', v: '--', note: '累計訪客', live: 'visitors' },
 ];
 ---
 
@@ -45,13 +50,13 @@ const stats = [
   </section>
 
   <!-- stats -->
-  <div class="stats">
+  <div class="stats" data-launched={site.launched} data-goatcounter={site.goatcounter}>
     {
       stats.map((s) => (
         <div class="stat">
           <span class="label">{s.k}</span>
-          <span class="stat-v mono">{s.v}</span>
-          <span class="stat-note">{s.note}</span>
+          <span class="stat-v mono" data-live={s.live}>{s.v}</span>
+          <span class="stat-note" data-live-note={s.live}>{s.note}</span>
         </div>
       ))
     }
@@ -136,6 +141,38 @@ const stats = [
     </div>
   </section>
 </Base>
+
+<script>
+  const stats = document.querySelector<HTMLElement>('.stats');
+  const uptime = document.querySelector<HTMLElement>('[data-live="uptime"]');
+  const uptimeNote = document.querySelector<HTMLElement>('[data-live-note="uptime"]');
+  const visitors = document.querySelector<HTMLElement>('[data-live="visitors"]');
+
+  // 運行時間：大字顯示天數，小字顯示 時:分:秒，每秒更新
+  const launched = new Date(stats?.dataset.launched ?? '').getTime();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const tick = () => {
+    const s = Math.max(0, Math.floor((Date.now() - launched) / 1000));
+    const d = Math.floor(s / 86400);
+    if (uptime) uptime.textContent = `${d}d`;
+    if (uptimeNote) uptimeNote.textContent = `已運行 ${pad(Math.floor((s % 86400) / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+  };
+  if (!Number.isNaN(launched)) {
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  // 訪客數：向 GoatCounter 拿全站累計數字（後台要勾選允許顯示訪客數）
+  const code = stats?.dataset.goatcounter;
+  if (code && visitors) {
+    fetch(`https://${code}.goatcounter.com/counter/TOTAL.json`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: { count?: string; count_unique?: string }) => {
+        visitors.textContent = d.count_unique ?? d.count ?? '--';
+      })
+      .catch(() => {});
+  }
+</script>
 
 <style>
   .accent {
@@ -227,7 +264,7 @@ const stats = [
   /* stats */
   .stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     border-top: 1px solid var(--line);
   }
 
@@ -412,6 +449,21 @@ const stats = [
     color: var(--muted);
   }
 
+  /* 6 格放不下時改成 3 格一排 */
+  @media (max-width: 1000px) {
+    .stats {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stat:nth-child(3n + 1) {
+      border-left: 0;
+    }
+
+    .stat:nth-child(n + 4) {
+      border-top: 1px solid var(--line);
+    }
+  }
+
   @media (max-width: 900px) {
     .exp-grid {
       grid-template-columns: 1fr;
@@ -440,7 +492,11 @@ const stats = [
       grid-template-columns: repeat(2, 1fr);
     }
 
-    .stat:nth-child(3) {
+    .stat:nth-child(n) {
+      border-left: 1px solid var(--line);
+    }
+
+    .stat:nth-child(odd) {
       border-left: 0;
     }
 
