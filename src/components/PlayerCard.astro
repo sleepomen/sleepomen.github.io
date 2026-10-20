@@ -21,12 +21,15 @@ const Tag = item.url && !item.spotify ? 'a' : 'div';
   <span class="cover">
     {item.cover ? <img src={item.cover} alt="" loading="lazy" /> : <span class="cover-ph mono">♪</span>}
   </span>
-  <span class="title">{item.title}</span>
-  {
-    (item.creator || item.year) && (
-      <span class="creator">{[item.creator, item.year].filter(Boolean).join(' · ')}</span>
-    )
-  }
+  <span class="info">
+    <span class="title">{item.title}</span>
+    {
+      (item.creator || item.year) && (
+        <span class="creator">{[item.creator, item.year].filter(Boolean).join(' · ')}</span>
+      )
+    }
+  </span>
+  <!-- 從進度條開始往下都貼齊卡片底部，名稱長短不同也會對齊 -->
   <span class="bar" aria-hidden="true"><span class="fill"></span></span>
   <span class="controls" aria-hidden="true">
     <svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 5v14M19 5 9 12l10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
@@ -117,10 +120,16 @@ const Tag = item.url && !item.spotify ? 'a' : 'div';
     line-height: 1.5;
   }
 
+  .info {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+  }
+
   .bar {
     position: relative;
     height: 3px;
-    margin-top: 14px;
+    margin-top: auto;
     border-radius: 0;
     background: var(--p-track);
   }
