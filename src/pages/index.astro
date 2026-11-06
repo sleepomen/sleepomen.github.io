@@ -21,7 +21,7 @@ const stats: { k: string; v: string; note: string; live?: 'uptime' | 'visitors' 
   { k: 'Stack', v: String(skills.length).padStart(2, '0'), note: '常用技術' },
   { k: 'Posts', v: String(posts.length).padStart(2, '0'), note: '文章' },
   { k: 'Uptime', v: `${uptimeDays}d`, note: '網站已運行', live: 'uptime' },
-  { k: 'Visitors', v: '--', note: '累計訪客', live: 'visitors' },
+  { k: 'Views', v: '--', note: '累計瀏覽次數', live: 'visitors' },
 ];
 ---
 
@@ -50,7 +50,7 @@ const stats: { k: string; v: string; note: string; live?: 'uptime' | 'visitors' 
   </section>
 
   <!-- stats -->
-  <div class="stats" data-launched={site.launched} data-goatcounter={site.goatcounter}>
+  <div class="stats" data-launched={site.launched} data-visitors-base={site.visitorsBase}>
     {
       stats.map((s) => (
         <div class="stat">
@@ -162,15 +162,13 @@ const stats: { k: string; v: string; note: string; live?: 'uptime' | 'visitors' 
     setInterval(tick, 1000);
   }
 
-  // 訪客數：向 GoatCounter 拿全站累計數字（後台要勾選允許顯示訪客數）
-  const code = stats?.dataset.goatcounter;
-  if (code && visitors) {
-    fetch(`https://${code}.goatcounter.com/counter/TOTAL.json`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: { count?: string; count_unique?: string }) => {
-        visitors.textContent = d.count_unique ?? d.count ?? '--';
-      })
-      .catch(() => {});
+  // 瀏覽次數：Base.astro 每開一頁就 +1，這裡拿結果顯示，再加上 site.ts 的起始值
+  const base = Number(stats?.dataset.visitorsBase) || 0;
+  const views = (window as { __views?: Promise<number | null> }).__views;
+  if (views && visitors) {
+    views.then((n) => {
+      if (n !== null) visitors.textContent = (n + base).toLocaleString('en-US');
+    });
   }
 </script>
 

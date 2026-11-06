@@ -28,6 +28,8 @@ export const site = {
   launched: '2026-08-21T19:55:10+08:00',
   // GoatCounter 帳號名稱：https://<這裡>.goatcounter.com，空白就不計數
   goatcounter: 'sleepomen',
+  // 首頁瀏覽次數的起始值：每開一次頁面 +1，這個數字會加在計數器上面（155 是換計數器前 GoatCounter 的數字）
+  visitorsBase: 155,
   intro:
     '電神們早安，我來自淡江高中人文社會班，目前為116特選牲，喜歡做開發，於資訊、電機、人文社會領域都有相關經驗，這裡可以看我發心得或是分享一些酷東西，可以叫我 Vessel，各位多多指教。',
 };
