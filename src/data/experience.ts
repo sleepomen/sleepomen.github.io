@@ -24,7 +24,7 @@ export const experience: ExperienceGroup[] = [
       { year: '2026', title: '2026 iThome 鐵人賽', sub: 'AI Engineering 組', result: '完成30日發文' },
       { year: '2026', title: 'OSSInt 開源空間資訊於國家韌性應用 黑客松競賽', sub: '組長', result: '無緣' },
       { year: '2026', title: '教育部 AI新世代扎根系列活動', sub: '台北場', result: '特別表現獎' },
-      { year: '2026', title: 'TAAI 高中生論文', sub: '人工智慧應用', result: '論文審查中...' },
+      { year: '2026', title: 'TAAI 高中生論文', sub: '人工智慧應用', result: '論文審查通過' },
     ],
   },
   {
