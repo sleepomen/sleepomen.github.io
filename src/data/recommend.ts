@@ -263,14 +263,6 @@ export const recommend: RecommendGroup[] = [
                 spotify: 'https://open.spotify.com/album/2hhcoYtj2jF8TmtWJ4eEYg',
               },
               {
-                title: 'SOLACE',
-                creator: 'Bryant Barnes',
-                year: '2025',
-                genre: 'Alternative',
-                cover: '/images/recommend/album-solace.jpg',
-                spotify: 'https://open.spotify.com/album/3IwmHrw566MMhJk0hsIZrQ',
-              },
-              {
                 title: 'Take Me Back To Eden',
                 creator: 'Sleep Token',
                 year: '2023',
@@ -285,14 +277,6 @@ export const recommend: RecommendGroup[] = [
                 genre: 'Alternative Metal',
                 cover: '/images/recommend/album-chin-up-beautiful.jpg',
                 spotify: 'https://open.spotify.com/album/0kimNgdB69eNOuDf4xZ7PW',
-              },
-              {
-                title: '更好',
-                creator: 'Gummy B',
-                year: '2025',
-                genre: 'Hip-Hop',
-                cover: '/images/recommend/album-better.jpg',
-                spotify: 'https://open.spotify.com/album/0FKC566l6cp7gHF0QXe9G3',
               },
               {
                 title: 'I Feel The Everblack Festering Within Me',
@@ -319,28 +303,12 @@ export const recommend: RecommendGroup[] = [
                 spotify: 'https://open.spotify.com/album/33QhXVyVMQmZ1MHf92a7Uw',
               },
               {
-                title: '嵌入生長',
-                creator: '加木',
-                year: '2025',
-                genre: 'Mandopop',
-                cover: '/images/recommend/album-embedded-growth.jpg',
-                spotify: 'https://open.spotify.com/album/4WzTaRTT9piXbAzXyYIXvN',
-              },
-              {
                 title: 'The Wild Hunt',
                 creator: 'Watain',
                 year: '2013',
                 genre: 'Black Metal',
                 cover: '/images/recommend/album-the-wild-hunt.jpg',
                 spotify: 'https://open.spotify.com/album/1FCdcUH6lumfoNYHTX5nz1',
-              },
-              {
-                title: '蜘蛛感應',
-                creator: '艾蜜莉AMILI',
-                year: '2024',
-                genre: 'Hip-Hop',
-                cover: '/images/recommend/album-spider-sense.jpg',
-                spotify: 'https://open.spotify.com/album/6bYxf7apUtCugOhbkidjZR',
               },
               {
                 title: 'Violent Nature',
@@ -357,14 +325,6 @@ export const recommend: RecommendGroup[] = [
                 genre: 'Metalcore',
                 cover: '/images/recommend/album-creature-in-the-black-night.jpg',
                 spotify: 'https://open.spotify.com/album/331dpokIUtNiVsUuDPLl9h',
-              },
-              {
-                title: 'LUNARFACE',
-                creator: '趙翊帆',
-                year: '2024',
-                genre: 'Hip-Hop',
-                cover: '/images/recommend/album-lunarface.jpg',
-                spotify: 'https://open.spotify.com/album/5ZzlRR3ODf69DbXafWYIBn',
               },
               {
                 title: 'King Of Terrors',

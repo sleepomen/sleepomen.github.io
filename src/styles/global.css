@@ -377,6 +377,109 @@ a.card:hover,
   text-align: left;
 }
 
+.prose th {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* 大標題前面的橘色小方塊 */
+.prose h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prose h2::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+}
+
+.prose strong {
+  color: var(--text);
+}
+
+.prose del {
+  text-decoration-color: var(--accent);
+}
+
+.prose li::marker {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.prose small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------- 文章裡可用的美編區塊（在 .md 裡用 <div class="..."> 包起來） ---------- */
+
+/* 資訊格：<div class="facts"><div><span>標籤</span><b>數值</b></div>...</div> */
+.prose .facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.prose .facts > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  background: var(--surface);
+}
+
+.prose .facts span {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.prose .facts b {
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.prose .facts small {
+  font-size: 12px;
+}
+
+/* 我的回答：<p class="ans"><strong>我</strong>：回答</p>，底色比背景淺一點 */
+.prose .ans {
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+
+/* 回答前後的問題往右縮，讓 a / b / c 跟「我」對齊（14px 內距 + 1px 框線） */
+.prose p:has(+ .ans),
+.prose .ans + p {
+  padding-left: 15px;
+}
+
+/* 重點框：<div class="callout">文字</div> */
+.prose .callout {
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  color: var(--text);
+}
+
+@media (max-width: 560px) {
+  .prose .facts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* shiki 雙主題切換 */
 :root[data-theme='light'] .astro-code,
 :root[data-theme='light'] .astro-code span {
