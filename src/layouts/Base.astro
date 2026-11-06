@@ -56,14 +56,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       )
     }
     <script is:inline>
-      // 瀏覽次數：每開一次頁面就 +1（同一個人看 10 次就算 10）
+      // 瀏覽次數：每開一次頁面就 +1（同一個人點進來 10 次就算 10）
       // 用免費的 Abacus 計數器，結果放在 window.__views，首頁拿來顯示
-      // 本機預覽（localhost）只讀數字、不加 1
+      // 不加 1 的情況：本機預覽（localhost）、按重新整理、按上一頁 / 下一頁回來
       (() => {
         const url = 'https://abacus.jasoncameron.dev';
         const key = 'sleepomen.github.io/views';
         const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
-        window.__views = fetch(`${url}/${local ? 'get' : 'hit'}/${key}`)
+        const nav = performance.getEntriesByType?.('navigation')[0]?.type;
+        const skip = local || nav === 'reload' || nav === 'back_forward';
+        window.__views = fetch(`${url}/${skip ? 'get' : 'hit'}/${key}`)
           .then((r) => (r.ok ? r.json() : r.status === 404 ? { value: 0 } : Promise.reject(r.status)))
           .then((d) => Math.max(0, Number(d.value) || 0))
           .catch(() => null);
