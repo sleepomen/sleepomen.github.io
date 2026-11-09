@@ -465,6 +465,57 @@ a.card:hover,
   padding-left: 15px;
 }
 
+/* 外部連結卡片：<div class="links"><a href="..."><b>標題</b><span>@暱稱 · 網站</span></a>...</div> */
+.prose .links {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+
+.prose .links a {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 40px 14px 4px;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  transition: background 0.15s, padding 0.15s;
+}
+
+.prose .links a::after {
+  content: '↗';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.prose .links a:hover {
+  background: var(--surface);
+  padding-left: 12px;
+  border-bottom-color: var(--line);
+}
+
+.prose .links a:hover b,
+.prose .links a:hover::after {
+  color: var(--accent);
+}
+
+.prose .links b {
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.15s;
+}
+
+.prose .links span {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
 /* 重點框：<div class="callout">文字</div> */
 .prose .callout {
   padding: 16px 18px;

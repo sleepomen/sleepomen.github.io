@@ -101,5 +101,10 @@ tags: [特殊選材, 綠洲計畫, 模擬面試]
 
 有任何問題都可以私訊我 OwOb。
 
+# 穩青椒電神們的心得
 
-
+<div class="links">
+<a href="https://hackmd.io/@miyun-owo/rkh0MUAjfx/https%3A%2F%2Fhackmd.io%2FjMrw7P0qQDSYDDFSm4nVzw%2Fpublish" target="_blank" rel="noopener"><b>Miyun_116 特選心得：面試準備</b><span>@葞澐miyun · hackmd.io</span></a>
+<a href="https://miwanzi.org/lzghnsim/" target="_blank" rel="noopener"><b>115-綠洲計畫-模擬面試-特殊選才面試心得</b><span>@Cuteyc（迷丸子的工程誌） · miwanzi.org</span></a>
+<a href="https://hackmd.io/@justmore5mins/SyD3ut6Tzg" target="_blank" rel="noopener"><b>115 年綠洲計劃模擬面試 面試心得</b><span>@Justmore5mins · hackmd.io</span></a>
+</div>
