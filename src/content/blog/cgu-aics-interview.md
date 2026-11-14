@@ -2,8 +2,9 @@
 title: 長庚 人工智慧學系資安組 面試心得
 date: 2026-11-13
 category: notes
-description: 長庚大學人工智慧資安組特殊選材面試流程、問題與心得。
-tags: [特殊選材, 長庚大學, 面試]
+series: selection-116
+description: 長庚大學人工智慧資安組特殊選才面試流程、問題與心得。
+tags: [特殊選才, 長庚大學, 面試]
 ---
 
 ## 面試規範

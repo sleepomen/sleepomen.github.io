@@ -7,9 +7,24 @@ import { experience } from '../data/experience';
 import { formatDate } from '../utils';
 import { getPosts } from '../posts';
 import { getCategory } from '../data/categories';
+import { getSeries } from '../data/series';
 
 const posts = await getPosts();
-const latest = posts.slice(0, 3);
+// 最新 3 項：同一個資料夾的文章收成一格，點進去是資料夾頁
+const latest: { href: string; date: Date; title: string; tag: string }[] = [];
+for (const p of posts) {
+  if (latest.length >= 3) break;
+  const sid = p.data.series;
+  if (sid) {
+    const href = `/blog/series/${sid}/`;
+    if (!latest.some((e) => e.href === href)) {
+      const n = posts.filter((q) => q.data.series === sid).length;
+      latest.push({ href, date: p.data.date, title: getSeries(sid).title, tag: `資料夾 · ${n} 篇` });
+    }
+  } else {
+    latest.push({ href: `/blog/${p.id}/`, date: p.data.date, title: p.data.title, tag: getCategory(p.data.category).label });
+  }
+}
 const expTotal = experience.reduce((n, g) => n + g.items.length, 0);
 
 // 建置當下的天數，打開頁面後會由下面的 script 即時更新
@@ -107,12 +122,12 @@ const stats: { k: string; v: string; note: string; live?: 'uptime' | 'visitors' 
     <SectionHead idx="03" title="文章" en="Blog" more={{ href: '/blog/', label: 'archive' }} />
     <ul class="post-list">
       {
-        latest.map((p) => (
+        latest.map((e) => (
           <li>
-            <a href={`/blog/${p.id}/`}>
-              <span class="mono date">{formatDate(p.data.date)}</span>
-              <span class="title">{p.data.title}</span>
-              <span class="tags mono">{getCategory(p.data.category).label}</span>
+            <a href={e.href}>
+              <span class="mono date">{formatDate(e.date)}</span>
+              <span class="title">{e.title}</span>
+              <span class="tags mono">{e.tag}</span>
             </a>
           </li>
         ))

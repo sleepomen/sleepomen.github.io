@@ -1,41 +1,71 @@
 ---
 import SectionHead from './SectionHead.astro';
 import { categories, getCategory, type CategoryId } from '../data/categories';
-import { getPosts } from '../posts';
+import { getSeries, type SeriesId } from '../data/series';
+import { getPosts, type Post } from '../posts';
 import { formatDate } from '../utils';
 
 interface Props {
   active?: CategoryId;
+  /** 有給就是資料夾頁：只列出這個資料夾裡的文章 */
+  series?: SeriesId;
 }
 
-const { active } = Astro.props;
+const { active, series } = Astro.props;
 const all = await getPosts();
-const posts = active ? all.filter((p) => p.data.category === active) : all;
+const posts = series
+  ? all.filter((p) => p.data.series === series)
+  : active
+    ? all.filter((p) => p.data.category === active)
+    : all;
 const count = (id: CategoryId) => all.filter((p) => p.data.category === id).length;
 
-const byYear = new Map<string, typeof posts>();
+// 列表項目：一般文章，或是一個資料夾（同資料夾的文章收成一格，排在最新那篇的位置）
+type Entry = { kind: 'post'; post: Post; date: Date } | { kind: 'folder'; id: SeriesId; posts: Post[]; date: Date };
+const entries: Entry[] = [];
 for (const p of posts) {
-  const y = formatDate(p.data.date).slice(0, 4);
-  byYear.set(y, [...(byYear.get(y) ?? []), p]);
+  const sid = series ? undefined : p.data.series;
+  if (!sid) {
+    entries.push({ kind: 'post', post: p, date: p.data.date });
+    continue;
+  }
+  const folder = entries.find((e) => e.kind === 'folder' && e.id === sid);
+  if (folder && folder.kind === 'folder') folder.posts.push(p);
+  else entries.push({ kind: 'folder', id: sid, posts: [p], date: p.data.date });
+}
+
+const byYear = new Map<string, Entry[]>();
+for (const e of entries) {
+  const y = formatDate(e.date).slice(0, 4);
+  byYear.set(y, [...(byYear.get(y) ?? []), e]);
 }
 
 const cat = active && getCategory(active);
+const folder = series && getSeries(series);
 ---
 
 <header class="page-head">
-  <div class="label">// 03 — Blog{cat && ` / ${cat.en}`}</div>
-  <h1>{cat ? cat.label : '文章'}</h1>
+  <div class="label">// 03 — Blog{cat && ` / ${cat.en}`}{folder && ' / Folder'}</div>
+  <h1>{folder ? folder.title : cat ? cat.label : '文章'}</h1>
   <p>共 {posts.length} 篇。</p>
-  <nav class="cats mono" aria-label="文章分類">
-    <a href="/blog/" class:list={{ on: !active }}>全部 <span class="c">{all.length}</span></a>
-    {
-      categories.map((c) => (
-        <a href={`/blog/category/${c.id}/`} class:list={{ on: active === c.id }}>
-          {c.label} <span class="c">{count(c.id)}</span>
+  {
+    folder ? (
+      <nav class="cats mono" aria-label="返回">
+        <a href="/blog/">← 全部文章</a>
+      </nav>
+    ) : (
+      <nav class="cats mono" aria-label="文章分類">
+        <a href="/blog/" class:list={{ on: !active }}>
+          全部 <span class="c">{all.length}</span>
         </a>
-      ))
-    }
-  </nav>
+        {categories.map((c) => (
+          <a href={`/blog/category/${c.id}/`} class:list={{ on: active === c.id }}>
+            {c.label} <span class="c">{count(c.id)}</span>
+          </a>
+        ))}
+      </nav>
+    )
+  }
 </header>
 
 {
@@ -49,23 +79,43 @@ const cat = active && getCategory(active);
 {
   [...byYear].map(([year, list]) => (
     <section class="section">
-      <SectionHead idx={year} title={`${list.length} 篇`} />
+      <SectionHead idx={year} title={`${list.reduce((n, e) => n + (e.kind === 'folder' ? e.posts.length : 1), 0)} 篇`} />
       <ul class="list">
-        {list.map((p) => (
-          <li>
-            <a href={`/blog/${p.id}/`}>
-              <span class="mono date">{formatDate(p.data.date).slice(5)}</span>
-              <span class="body">
-                <span class="title">{p.data.title}</span>
-                {p.data.description && <span class="desc">{p.data.description}</span>}
-              </span>
-              <span class="meta mono">
-                {!active && <span class="cat">{getCategory(p.data.category).label}</span>}
-                {p.data.tags.map((t) => `#${t}`).join(' ')}
-              </span>
-            </a>
-          </li>
-        ))}
+        {list.map((e) =>
+          e.kind === 'folder' ? (
+            <li>
+              <a href={`/blog/series/${e.id}/`} class="folder">
+                <span class="mono date">{formatDate(e.date).slice(5)}</span>
+                <span class="body">
+                  <span class="title">
+                    <svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                      <path d="M3 6.5V18a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8.5a1 1 0 0 0-1-1h-8.5L9.8 5.3a1 1 0 0 0-.8-.3H4a1 1 0 0 0-1 1.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    </svg>
+                    {getSeries(e.id).title}
+                  </span>
+                </span>
+                <span class="meta mono">
+                  <span class="cat">資料夾</span>
+                  {e.posts.length} 篇 →
+                </span>
+              </a>
+            </li>
+          ) : (
+            <li>
+              <a href={`/blog/${e.post.id}/`}>
+                <span class="mono date">{formatDate(e.post.data.date).slice(5)}</span>
+                <span class="body">
+                  <span class="title">{e.post.data.title}</span>
+                  {e.post.data.description && <span class="desc">{e.post.data.description}</span>}
+                </span>
+                <span class="meta mono">
+                  {!active && !series && <span class="cat">{getCategory(e.post.data.category).label}</span>}
+                  {e.post.data.tags.map((t) => `#${t}`).join(' ')}
+                </span>
+              </a>
+            </li>
+          ),
+        )}
       </ul>
     </section>
   ))
@@ -157,6 +207,23 @@ const cat = active && getCategory(active);
   .title {
     font-weight: 500;
     transition: color 0.15s;
+  }
+
+  .folder .title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .folder .ico {
+    flex: none;
+    color: var(--accent);
+  }
+
+  .folder .cat {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .desc {

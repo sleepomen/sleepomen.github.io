@@ -1,0 +1,16 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BlogArchive from '../../../components/BlogArchive.astro';
+import { series as allSeries, type SeriesId } from '../../../data/series';
+
+export function getStaticPaths() {
+  return allSeries.map((s) => ({ params: { series: s.id }, props: { title: s.title, description: s.description } }));
+}
+
+const { series } = Astro.params as { series: SeriesId };
+const { title, description } = Astro.props;
+---
+
+<Base title={`${title} | 文章`} description={description}>
+  <BlogArchive series={series} />
+</Base>

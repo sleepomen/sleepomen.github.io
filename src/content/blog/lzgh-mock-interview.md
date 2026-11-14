@@ -2,8 +2,9 @@
 title: 綠洲計畫 北部場次 模擬面試心得
 date: 2026-11-08
 category: notes
+series: selection-116
 description: 綠洲模擬面試心得。
-tags: [特殊選材, 綠洲計畫, 模擬面試]
+tags: [特殊選才, 綠洲計畫, 模擬面試]
 ---
 
 # 今日流程
