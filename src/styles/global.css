@@ -460,8 +460,8 @@ a.card:hover,
 }
 
 /* 回答前後的問題往右縮，讓 a / b / c 跟「我」對齊（14px 內距 + 1px 框線） */
-.prose p:has(+ .ans),
-.prose .ans + p {
+.prose p:has(> strong:first-child):has(+ .ans),
+.prose .ans + p:has(> strong:first-child) {
   padding-left: 15px;
 }
 
